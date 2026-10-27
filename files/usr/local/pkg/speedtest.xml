@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE packagegui SYSTEM "../schema/packages.dtd">
+<?xml-stylesheet type="text/xsl" href="../xsl/package.xsl"?>
+<!-- Copyright 2026 Jeff Nelson. Licensed under the Apache License, Version 2.0. -->
+<packagegui>
+	<name>speedtest</name>
+	<version>%%PKGVERSION%%</version>
+	<title>Services/Speedtest</title>
+	<include_file>/usr/local/pkg/speedtest.inc</include_file>
+	<addedit_string>Speedtest: general settings saved</addedit_string>
+	<delete_string>Speedtest: general settings deleted</delete_string>
+	<menu>
+		<name>Speedtest</name>
+		<section>Services</section>
+		<url>/pkg_edit.php?xml=speedtest.xml</url>
+	</menu>
+	<tabs>
+		<tab>
+			<text>General</text>
+			<url>/pkg_edit.php?xml=speedtest.xml</url>
+			<active/>
+		</tab>
+		<tab>
+			<text>Gateways</text>
+			<url>/pkg.php?xml=speedtestgateways.xml</url>
+		</tab>
+	</tabs>
+	<fields>
+		<field>
+			<fielddescr>Enable</fielddescr>
+			<fieldname>enable</fieldname>
+			<description>Allow speedtests to run.</description>
+			<type>checkbox</type>
+			<default_value>on</default_value>
+		</field>
+		<field>
+			<fielddescr>Result retention</fielddescr>
+			<fieldname>retention</fieldname>
+			<description>Results kept per gateway (10-10000).</description>
+			<type>input</type>
+			<default_value>500</default_value>
+		</field>
+		<field>
+			<fielddescr>Show all gateways</fielddescr>
+			<fieldname>show_all_gateways</fieldname>
+			<description>Also offer VPN and tunnel gateways on the Gateways tab.</description>
+			<type>checkbox</type>
+		</field>
+		<field>
+			<fielddescr>Remove data on uninstall</fielddescr>
+			<fieldname>remove_on_deinstall</fieldname>
+			<description>Delete stored results when the package is removed.</description>
+			<type>checkbox</type>
+		</field>
+		<field>
+			<fielddescr>Ookla CLI version</fielddescr>
+			<fieldname>ookla_version</fieldname>
+			<description>Version installed by Reinstall CLI. The button installs the selected version without saving other changes.</description>
+			<type>select_source</type>
+			<source><![CDATA[speedtest_select_rows(speedtest_manifest_versions())]]></source>
+			<source_name>name</source_name>
+			<source_value>value</source_value>
+		</field>
+		<field>
+			<fielddescr>Ookla CLI status</fielddescr>
+			<description>Unknown</description>
+			<type>info</type>
+		</field>
+		<field>
+			<fielddescr>Reinstall CLI</fielddescr>
+			<fieldname>reinstall</fieldname>
+			<description>Download and verify the selected Ookla CLI build.</description>
+			<type>button</type>
+		</field>
+	</fields>
+	<custom_php_command_before_form>
+	<![CDATA[
+		if (isset($_POST['reinstall'])) {
+			$speedtest_res = speedtest_reinstall_from_post($_POST);
+			$speedtest_msg = ($speedtest_res['ok'] ? '' : 'FAILED: ') . $speedtest_res['message'];
+			pfSenseHeader("pkg_edit.php?xml=speedtest.xml&id=0&savemsg=" . urlencode($speedtest_msg));
+			exit;
+		}
+		speedtest_fill_status($pkg);
+	]]>
+	</custom_php_command_before_form>
+	<custom_php_validation_command>
+	<![CDATA[
+		speedtest_validate_general($_POST, $input_errors);
+	]]>
+	</custom_php_validation_command>
+	<custom_php_resync_config_command>
+	<![CDATA[
+		speedtest_resync();
+	]]>
+	</custom_php_resync_config_command>
+	<custom_php_deinstall_command><![CDATA[speedtest_remove_all_cron_jobs();]]></custom_php_deinstall_command>
+</packagegui>

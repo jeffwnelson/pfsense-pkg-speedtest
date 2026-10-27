@@ -1,0 +1,4 @@
+{"builds":[
+{"version":"1.2.0","freebsd_major":13,"url":"https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-freebsd13-x86_64.pkg","pkg_sha256":"23b20119066df5b08c4f3a8920334ccaab0783780f9b2494629394d1ef33e6f8","pkg_size":638832,"bin_sha256":"a3a65ac2a40ab28061af3fa803afabe8f3a3d58bf3fc58041c2c1be84dd43997"},
+{"version":"1.2.0","freebsd_major":12,"url":"https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-freebsd12-x86_64.pkg","pkg_sha256":"88e136dfb3eda918cd93f52af208ab70ea52b7414201ae06976d65e68e2cb25c","pkg_size":638620,"bin_sha256":"a3a65ac2a40ab28061af3fa803afabe8f3a3d58bf3fc58041c2c1be84dd43997"}
+]}

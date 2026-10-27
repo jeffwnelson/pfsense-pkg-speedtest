@@ -1,0 +1,6 @@
+stage/
+dist/
+.superpowers/
+*.pkg
+plist
+manifest.json

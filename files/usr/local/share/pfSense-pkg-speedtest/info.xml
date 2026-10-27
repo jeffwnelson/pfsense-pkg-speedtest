@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- Copyright 2026 Jeff Nelson. Licensed under the Apache License, Version 2.0. -->
+<pfsensepkgs>
+	<package>
+		<name>speedtest</name>
+		<website>https://github.com/jeffwnelson/pfsense-pkg-speedtest</website>
+		<descr><![CDATA[Per-WAN Ookla speedtests with pass/fail against advertised speed]]></descr>
+		<version>%%PKGVERSION%%</version>
+		<configurationfile>speedtest.xml</configurationfile>
+	</package>
+</pfsensepkgs>

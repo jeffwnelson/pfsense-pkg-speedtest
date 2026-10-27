@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE packagegui SYSTEM "../schema/packages.dtd">
+<?xml-stylesheet type="text/xsl" href="../xsl/package.xsl"?>
+<!-- Copyright 2026 Jeff Nelson. Licensed under the Apache License, Version 2.0. -->
+<packagegui>
+	<name>speedtestgateways</name>
+	<version>%%PKGVERSION%%</version>
+	<title>Services/Speedtest/Gateways</title>
+	<include_file>/usr/local/pkg/speedtest.inc</include_file>
+	<addedit_string>Speedtest: gateway settings saved</addedit_string>
+	<delete_string>Speedtest: gateway removed</delete_string>
+	<tabs>
+		<tab>
+			<text>General</text>
+			<url>/pkg_edit.php?xml=speedtest.xml</url>
+		</tab>
+		<tab>
+			<text>Gateways</text>
+			<url>/pkg.php?xml=speedtestgateways.xml</url>
+			<active/>
+		</tab>
+	</tabs>
+	<adddeleteeditpagefields>
+		<columnitem>
+			<fielddescr>Gateway</fielddescr>
+			<fieldname>gateway</fieldname>
+		</columnitem>
+		<columnitem>
+			<fielddescr>Advertised down (Mbps)</fielddescr>
+			<fieldname>advertised_down</fieldname>
+		</columnitem>
+		<columnitem>
+			<fielddescr>Advertised up (Mbps)</fielddescr>
+			<fieldname>advertised_up</fieldname>
+		</columnitem>
+		<columnitem>
+			<fielddescr>Pass threshold (%)</fielddescr>
+			<fieldname>threshold_pct</fieldname>
+		</columnitem>
+		<columnitem>
+			<fielddescr>Server ID</fielddescr>
+			<fieldname>server_id</fieldname>
+		</columnitem>
+		<columnitem>
+			<fielddescr>Interval (minutes)</fielddescr>
+			<fieldname>interval</fieldname>
+		</columnitem>
+	</adddeleteeditpagefields>
+	<fields>
+		<field>
+			<fielddescr>Gateway</fielddescr>
+			<fieldname>gateway</fieldname>
+			<description>IPv4 gateway to test.</description>
+			<type>select_source</type>
+			<source><![CDATA[speedtest_select_rows(speedtest_gateway_options())]]></source>
+			<source_name>name</source_name>
+			<source_value>value</source_value>
+			<required/>
+		</field>
+		<field>
+			<fielddescr>Advertised download (Mbps)</fielddescr>
+			<fieldname>advertised_down</fieldname>
+			<description>Leave blank to skip the download pass/fail check.</description>
+			<type>input</type>
+		</field>
+		<field>
+			<fielddescr>Advertised upload (Mbps)</fielddescr>
+			<fieldname>advertised_up</fieldname>
+			<description>Leave blank to skip the upload pass/fail check.</description>
+			<type>input</type>
+		</field>
+		<field>
+			<fielddescr>Pass threshold (%)</fielddescr>
+			<fieldname>threshold_pct</fieldname>
+			<description>Minimum percent of advertised speed that counts as a pass (50-100, default 80).</description>
+			<type>input</type>
+			<default_value>80</default_value>
+		</field>
+		<field>
+			<fielddescr>Server ID</fielddescr>
+			<fieldname>server_id</fieldname>
+			<description>Ookla server ID to use. Leave blank to let Ookla choose.</description>
+			<type>input</type>
+		</field>
+		<field>
+			<fielddescr>Interval</fielddescr>
+			<fieldname>interval</fieldname>
+			<description>How often to run this test automatically. Runs are staggered 7 minutes apart per gateway.</description>
+			<type>select_source</type>
+			<source><![CDATA[speedtest_select_rows(speedtest_interval_options())]]></source>
+			<source_name>name</source_name>
+			<source_value>value</source_value>
+			<default_value>0</default_value>
+		</field>
+	</fields>
+	<custom_php_validation_command>
+	<![CDATA[
+		speedtest_validate_gateway_row($_POST, $input_errors, $id ?? null);
+	]]>
+	</custom_php_validation_command>
+	<custom_php_resync_config_command><![CDATA[speedtest_resync();]]></custom_php_resync_config_command>
+</packagegui>
