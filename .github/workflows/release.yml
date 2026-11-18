@@ -1,0 +1,87 @@
+# Copyright 2026 Jeff Nelson
+# Licensed under the Apache License, Version 2.0.
+#
+# Every push to main cuts a release: cocogitto picks the bump from the
+# conventional commits since the last tag (patch when none call for one),
+# updates CHANGELOG.md, tags, then the package is built from that tag and
+# published with the changelog section as release notes. The bump commit is
+# pushed with GITHUB_TOKEN, which does not re-trigger this workflow.
+name: release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the version commit and tag
+    outputs:
+      version: ${{ steps.bump.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: true # needed to push the bump commit and tag
+      - uses: ./.github/actions/setup-cog
+      - name: Bump version
+        id: bump
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if cog bump --auto --dry-run 2>/dev/null | grep -q '^v[0-9]'; then
+            cog bump --auto
+          else
+            cog bump --patch
+          fi
+          tag=$(git describe --tags --exact-match HEAD)
+          git push --atomic origin HEAD:main "$tag"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+          # Release notes: the newest CHANGELOG.md section, without its heading.
+          awk '/^## \[/{n++; next} /^- - -$/{if(n) exit} n==1' CHANGELOG.md > release-notes.md
+          cat release-notes.md
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-notes
+          path: release-notes.md
+
+  build:
+    needs: bump
+    permissions:
+      contents: write # required by build.yml's job; it only publishes on tag pushes
+    uses: ./.github/workflows/build.yml
+    with:
+      ref: v${{ needs.bump.outputs.version }}
+      version: ${{ needs.bump.outputs.version }}
+
+  publish:
+    needs: [bump, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the GitHub release
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: pfSense-pkg-speedtest
+          path: dist
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-notes
+      - uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
+        with:
+          tag_name: v${{ needs.bump.outputs.version }}
+          name: v${{ needs.bump.outputs.version }}
+          body_path: release-notes.md
+          files: |
+            dist/*.pkg
+            dist/*.sha256

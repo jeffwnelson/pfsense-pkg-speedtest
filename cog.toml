@@ -1,0 +1,16 @@
+# Copyright 2026 Jeff Nelson
+# Licensed under the Apache License, Version 2.0.
+#
+# Cocogitto: conventional commits, version bumps and CHANGELOG.md.
+# Every push to main is released by .github/workflows/release.yml.
+tag_prefix = "v"
+branch_whitelist = ["main"]
+ignore_merge_commits = true
+
+[changelog]
+path = "CHANGELOG.md"
+template = "remote"
+remote = "github.com"
+owner = "jeffwnelson"
+repository = "pfsense-pkg-speedtest"
+authors = []

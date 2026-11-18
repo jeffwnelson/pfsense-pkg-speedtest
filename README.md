@@ -8,4 +8,8 @@ Set an **Interval** per gateway on the Gateways tab (off, 1 h, 3 h, 6 h, 12 h or
 
 If a gateway is renamed or removed in System → Routing, delete its row here; otherwise its job logs `skipped: unknown gateway` at each interval.
 
+## Releases
+
+Every push to `main` is released automatically: [cocogitto](https://docs.cocogitto.io) picks the next version from the [conventional commits](https://www.conventionalcommits.org/) since the last tag (`feat` → minor, `fix` and everything else → patch, `!`/`BREAKING CHANGE` → major), updates `CHANGELOG.md`, tags it, and publishes the package with that changelog section as the release notes. PRs are squash-merged, so the PR title must be a conventional commit (checked in CI).
+
 Licensed under Apache-2.0.
