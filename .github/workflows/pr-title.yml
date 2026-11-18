@@ -23,4 +23,8 @@ jobs:
       - name: Verify PR title
         env:
           TITLE: ${{ github.event.pull_request.title }}
-        run: cog verify "$TITLE"
+        run: |
+          # cog reads the git identity even when only verifying a message.
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          cog verify "$TITLE"
