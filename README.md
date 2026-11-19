@@ -8,4 +8,8 @@ Set an **Interval** per gateway on the Gateways tab (off, 1 h, 3 h, 6 h, 12 h or
 
 If a gateway is renamed or removed in System → Routing, delete its row here; otherwise its job logs `skipped: unknown gateway` at each interval.
 
+## Updates
+
+The **Updates** tab shows the installed and latest versions with release notes, and installs any release from GitHub (newer to upgrade, older to roll back) after checking its SHA-256. Settings and results are kept. A daily check posts a pfSense notice when a new release is out; it never installs anything itself (turn it off with **Disable update check** on the General tab). From a shell: `pfsense-speedtest version | check | list | update [version]`. Installing needs the *WebCfg - Services: Speedtest: Updates* privilege.
+
 Licensed under Apache-2.0.

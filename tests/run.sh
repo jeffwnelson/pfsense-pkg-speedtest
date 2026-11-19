@@ -49,7 +49,7 @@ while IFS= read -r f; do
 		rc=1
 	fi
 done <<EOT
-$(find files \( -name '*.php' -o -name '*.inc' \))
+$(find files \( -name '*.php' -o -name '*.inc' \); echo files/usr/local/bin/pfsense-speedtest)
 EOT
 
 while IFS= read -r f; do

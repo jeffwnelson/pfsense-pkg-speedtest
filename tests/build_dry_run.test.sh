@@ -17,6 +17,9 @@ done
 if grep -rq '%%PKGVERSION%%' stage; then fail "unsubstituted %%PKGVERSION%% left"; fi
 grep -q '<version>9.8.7</version>' stage/usr/local/pkg/speedtest.xml || fail "version not substituted"
 [ -x stage/usr/local/libexec/speedtest/run.sh ] || fail "run.sh lost its exec bit"
+[ -x stage/usr/local/libexec/speedtest/update.sh ] || fail "update.sh lost its exec bit"
+[ -x stage/usr/local/bin/pfsense-speedtest ] || fail "pfsense-speedtest lost its exec bit"
+grep -qx '/usr/local/www/speedtest_updates.php' plist || fail "plist lacks the Updates page"
 [ ! -x stage/usr/local/pkg/speedtest.inc ] || fail "speedtest.inc should not be executable"
 
 grep -qx '/usr/local/share/pfSense-pkg-speedtest/info.xml' plist || fail "plist lacks info.xml"

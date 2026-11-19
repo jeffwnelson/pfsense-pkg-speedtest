@@ -24,6 +24,10 @@
 			<text>Gateways</text>
 			<url>/pkg.php?xml=speedtestgateways.xml</url>
 		</tab>
+		<tab>
+			<text>Updates</text>
+			<url>/speedtest_updates.php</url>
+		</tab>
 	</tabs>
 	<fields>
 		<field>
@@ -50,6 +54,12 @@
 			<fielddescr>Remove data on uninstall</fielddescr>
 			<fieldname>remove_on_deinstall</fieldname>
 			<description>Delete stored results when the package is removed.</description>
+			<type>checkbox</type>
+		</field>
+		<field>
+			<fielddescr>Disable update check</fielddescr>
+			<fieldname>no_update_check</fieldname>
+			<description>Stop the daily check for new package releases. When a new release is found, a notice is posted; nothing is installed until you choose to on the Updates tab.</description>
 			<type>checkbox</type>
 		</field>
 		<field>

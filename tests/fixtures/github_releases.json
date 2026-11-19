@@ -1,0 +1,24 @@
+[
+  {"tag_name": "v0.10.0", "draft": false, "prerelease": false, "published_at": "2026-12-01T10:00:00Z",
+   "body": "#### Features\n- (**widget**) show <b>bold</b> - ([abc1234](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/abc1234)) - Jeff\n- evil [x](javascript:alert(1))",
+   "assets": [
+     {"name": "pfSense-pkg-speedtest-0.10.0.pkg", "digest": "sha256:7eb558a5f133b662c670c8ef747bb6dba6c4071fc347886c62ae20c86e9bd7ce", "browser_download_url": "https://github.com/jeffwnelson/pfsense-pkg-speedtest/releases/download/v0.10.0/pfSense-pkg-speedtest-0.10.0.pkg"},
+     {"name": "pfSense-pkg-speedtest-0.10.0.pkg.sha256", "browser_download_url": "https://github.com/jeffwnelson/pfsense-pkg-speedtest/releases/download/v0.10.0/pfSense-pkg-speedtest-0.10.0.pkg.sha256"}
+   ]},
+  {"tag_name": "v0.11.0-rc.1", "draft": false, "prerelease": true, "published_at": "2026-12-02T10:00:00Z", "body": "",
+   "assets": [{"name": "pfSense-pkg-speedtest-0.11.0.pkg", "browser_download_url": "https://github.com/jeffwnelson/pfsense-pkg-speedtest/releases/download/v0.11.0-rc.1/pfSense-pkg-speedtest-0.11.0.pkg"}]},
+  {"tag_name": "v0.12.0", "draft": true, "prerelease": false, "published_at": null, "body": "",
+   "assets": [{"name": "pfSense-pkg-speedtest-0.12.0.pkg", "browser_download_url": "https://github.com/jeffwnelson/pfsense-pkg-speedtest/releases/download/v0.12.0/pfSense-pkg-speedtest-0.12.0.pkg"}]},
+  {"tag_name": "v0.9.0", "draft": false, "prerelease": false, "published_at": "2026-11-25T10:00:00Z", "body": "no assets", "assets": []},
+  {"tag_name": "v0.8.0", "draft": false, "prerelease": false, "published_at": "2026-11-24T10:00:00Z", "body": "foreign url",
+   "assets": [{"name": "pfSense-pkg-speedtest-0.8.0.pkg", "browser_download_url": "https://evil.example/pfSense-pkg-speedtest-0.8.0.pkg"}]},
+  {"tag_name": "latest", "draft": false, "prerelease": false, "published_at": "2026-11-23T10:00:00Z", "body": "", "assets": []},
+  {"tag_name": "v0.2.2", "draft": false, "prerelease": false, "published_at": "2026-11-18T23:37:17Z",
+   "body": "#### Continuous Integration\n- release every push",
+   "assets": [
+     {"name": "pfSense-pkg-speedtest-0.2.2.pkg.sha256", "digest": "sha256:ed8a911f63fee0f99ebe7e9d1e2f2b14a72fd665f67df801755fa3af54514063", "browser_download_url": "https://github.com/jeffwnelson/pfsense-pkg-speedtest/releases/download/v0.2.2/pfSense-pkg-speedtest-0.2.2.pkg.sha256"},
+     {"name": "pfSense-pkg-speedtest-0.2.2.pkg", "browser_download_url": "https://github.com/jeffwnelson/pfsense-pkg-speedtest/releases/download/v0.2.2/pfSense-pkg-speedtest-0.2.2.pkg"}
+   ]},
+  {"tag_name": "v0.2.1", "draft": false, "prerelease": false, "published_at": "2026-10-27T06:00:00Z", "body": "",
+   "assets": [{"name": "pfSense-pkg-speedtest-0.2.1.pkg", "digest": "sha256:NOTHEX", "browser_download_url": "https://github.com/jeffwnelson/pfsense-pkg-speedtest/releases/download/v0.2.1/pfSense-pkg-speedtest-0.2.1.pkg"}]}
+]
