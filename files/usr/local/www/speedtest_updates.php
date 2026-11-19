@@ -76,91 +76,97 @@ foreach ($releases as $r) {
 if (!$notes && $latest !== null) {
 	$notes[] = $latest;
 }
+
+$h = function ($v): string { return htmlspecialchars((string)$v); };
+
+$form = new Form(false);
+
+$section = new Form_Section(gettext('Version'));
+$section->addInput(new Form_StaticText(gettext('Installed version'), $h($installed ?: gettext('unknown'))))
+    ->setHelp(gettext('The Speedtest package version installed on this system.'));
+$badge = '';
+if ($avail !== null) {
+	$badge = ' <span class="label label-success">' . gettext('Update available') . '</span>';
+} elseif ($latest !== null && $installed !== '') {
+	$badge = ' <span class="label label-default">' . gettext('Up to date') . '</span>';
+}
+$section->addInput(new Form_StaticText(gettext('Latest version'), $h($latest['version'] ?? gettext('unknown')) . $badge))
+    ->setHelp(gettext('The newest release published on GitHub.'));
+$section->addInput(new Form_StaticText(gettext('Release date'),
+    $h($latest !== null && $latest['published'] !== '' ? substr($latest['published'], 0, 10) : gettext('unknown'))))
+    ->setHelp(gettext("The latest release's publish date."));
+$section->addInput(new Form_StaticText(gettext('Last checked'),
+    $h($rel['fetched_at'] ? date('Y-m-d H:i', $rel['fetched_at']) : gettext('never'))))
+    ->setHelp(gettext('Checked daily in the background (unless disabled on the General tab) and at most hourly when this page is opened.'));
+$form->add($section);
+
+if ($releases) {
+	$options = [];
+	foreach ($releases as $i => $r) {
+		$tags = [];
+		if ($i === 0) {
+			$tags[] = gettext('latest');
+		}
+		if ($r['version'] === $installed) {
+			$tags[] = gettext('installed');
+		}
+		$options[$r['version']] = $r['version'] . ($tags ? ' (' . implode(', ', $tags) . ')' : '')
+		    . ($r['published'] !== '' ? ' - ' . substr($r['published'], 0, 10) : '');
+	}
+	$selected = $avail !== null ? $avail['version'] : ($installed !== '' && isset($options[$installed]) ? $installed : array_key_first($options));
+	$section = new Form_Section(gettext('Install a different version'));
+	$select = $section->addInput(new Form_Select('version', gettext('Install version'), $selected, $options))
+	    ->setHelp(gettext('Set the version to update or roll back to. The release is downloaded from GitHub, its SHA-256 '
+	    . 'is checked and it is installed with pkg. Settings, gateways and stored results are kept.'));
+	if ($status['running']) {
+		$select->setDisabled();
+	}
+	$form->add($section);
+}
+
+if ($releases) {
+	$install = new Form_Button('install', gettext('Install'), null, 'fa-solid fa-download');
+	$install->addClass('btn-primary');
+	if ($status['running']) {
+		$install->setDisabled();
+	}
+	$form->addGlobal($install);
+}
+$check = new Form_Button('check', gettext('Check now'), null, 'fa-solid fa-search');
+$check->addClass('btn-default');
+$form->addGlobal($check);
+
+print($form);
+
+if ($status['log'] !== '') {
+	if ($status['running']) {
+		$title = '<i class="fa-solid fa-spinner fa-spin"></i> ' . gettext('Update in progress');
+	} elseif ($status['rc'] === 0) {
+		$title = gettext('Last update: succeeded');
+	} else {
+		$title = gettext('Last update: failed') . ($status['rc'] !== null ? ' (' . (int)$status['rc'] . ')' : '');
+	}
 ?>
 <div class="panel panel-default">
-	<div class="panel-heading"><h2 class="panel-title"><?=gettext("Package version")?></h2></div>
-	<div class="panel-body">
-		<dl class="dl-horizontal">
-			<dt><?=gettext("Installed")?></dt>
-			<dd><?=htmlspecialchars($installed ?: gettext('unknown'))?></dd>
-			<dt><?=gettext("Latest release")?></dt>
-			<dd>
-				<?=htmlspecialchars($latest['version'] ?? gettext('unknown'))?>
-<?php if ($avail !== null): ?>
-				<span class="label label-success"><?=gettext("Update available")?></span>
-<?php elseif ($latest !== null && $installed !== ''): ?>
-				<span class="label label-default"><?=gettext("Up to date")?></span>
-<?php endif; ?>
-			</dd>
-			<dt><?=gettext("Last checked")?></dt>
-			<dd><?=$rel['fetched_at'] ? htmlspecialchars(date('Y-m-d H:i', $rel['fetched_at'])) : gettext('never')?></dd>
-		</dl>
-		<form method="post" action="<?=$self?>">
-			<button type="submit" name="check" value="1" class="btn btn-sm btn-default">
-				<i class="fa-solid fa-arrows-rotate icon-embed-btn"></i><?=gettext("Check now")?>
-			</button>
-		</form>
-	</div>
+	<div class="panel-heading"><h2 class="panel-title"><?=$title?></h2></div>
+	<div class="panel-body" style="padding: 10px 15px;"><pre style="margin: 0;"><?=$h($status['log'])?></pre></div>
 </div>
+<?php
+}
 
-<div class="panel panel-default">
-	<div class="panel-heading"><h2 class="panel-title"><?=gettext("Install a version")?></h2></div>
-	<div class="panel-body">
-<?php if (!$releases): ?>
-		<p><?=gettext("No releases are known yet. Use Check now.")?></p>
-<?php else: ?>
-		<form method="post" action="<?=$self?>" class="form-inline" id="speedtest-install">
-			<select name="version" class="form-control"<?=$status['running'] ? ' disabled' : ''?>>
-<?php foreach ($releases as $i => $r):
-	$tags = [];
-	if ($i === 0) {
-		$tags[] = gettext('latest');
-	}
-	if ($r['version'] === $installed) {
-		$tags[] = gettext('installed');
-	}
-	$label = $r['version'] . ($tags ? ' (' . implode(', ', $tags) . ')' : '') . ' - ' . substr($r['published'], 0, 10);
+foreach ($notes as $r):
 ?>
-				<option value="<?=htmlspecialchars($r['version'])?>"<?=($avail !== null ? $i === 0 : $r['version'] === $installed) ? ' selected' : ''?>><?=htmlspecialchars($label)?></option>
-<?php endforeach; ?>
-			</select>
-			<button type="submit" name="install" value="1" class="btn btn-primary"<?=$status['running'] ? ' disabled' : ''?>>
-				<i class="fa-solid fa-download icon-embed-btn"></i><?=gettext("Install")?>
-			</button>
-		</form>
-		<p class="help-block"><?=gettext("Downloads the release from GitHub, checks its SHA-256 and installs it with pkg. "
-		    . "Choosing an older version rolls back. Settings, gateways and stored results are kept.")?></p>
-<?php endif; ?>
-	</div>
-</div>
-
-<?php if ($status['log'] !== ''): ?>
 <div class="panel panel-default">
-	<div class="panel-heading"><h2 class="panel-title">
-<?php if ($status['running']): ?>
-		<i class="fa-solid fa-spinner fa-spin"></i> <?=gettext("Update in progress")?>
-<?php elseif ($status['rc'] === 0): ?>
-		<?=gettext("Last update: succeeded")?>
-<?php else: ?>
-		<?=gettext("Last update: failed")?><?=$status['rc'] !== null ? ' (' . (int)$status['rc'] . ')' : ''?>
-<?php endif; ?>
-	</h2></div>
-	<div class="panel-body"><pre><?=htmlspecialchars($status['log'])?></pre></div>
-</div>
-<?php endif; ?>
-
-<?php foreach ($notes as $r): ?>
-<div class="panel panel-default">
-	<div class="panel-heading"><h2 class="panel-title"><?=sprintf(gettext("What's new in %s"), htmlspecialchars($r['version']))?></h2></div>
-	<div class="panel-body"><?=speedtest_render_notes($r['notes']) ?: gettext('No release notes.')?></div>
+	<div class="panel-heading"><h2 class="panel-title"><?=sprintf(gettext("What's new in %s"), $h($r['version']))?></h2></div>
+	<div class="panel-body speedtest-notes" style="padding: 10px 15px;"><?=speedtest_render_notes($r['notes']) ?: gettext('No release notes.')?></div>
 </div>
 <?php endforeach; ?>
 
 <script type="text/javascript">
 //<![CDATA[
 events.push(function() {
-	$('#speedtest-install').on('submit', function() {
-		var v = $(this).find('select[name=version]').val();
+	$('button[name=install]').on('click', function() {
+		var v = $('select[name=version]').val();
 		return confirm('Install pfSense-pkg-speedtest ' + v + '? The package will be reinstalled; settings and results are kept.');
 	});
 <?php if ($status['running']): ?>
