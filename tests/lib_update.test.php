@@ -43,6 +43,7 @@ foreach (['', '1.2', '1.2.3.4', 'v1.2.3', '1.2.3-rc1', "1.2.3\n", '1.2.3; rm -rf
 assert_true(speedtest_valid_sha256(str_repeat('a', 64)), 'valid sha256');
 assert_true(!speedtest_valid_sha256(str_repeat('A', 64)), 'uppercase sha256 rejected (normalised elsewhere)');
 assert_true(!speedtest_valid_sha256(str_repeat('a', 63)), 'short sha256 rejected');
+assert_true(!speedtest_valid_sha256(str_repeat('a', 64) . "\n"), 'sha256 with trailing newline rejected');
 
 $h = str_repeat('ab', 32);
 assert_eq($h, speedtest_parse_sha256_file("$h pfSense-pkg-speedtest-1.0.0.pkg\n", 'pfSense-pkg-speedtest-1.0.0.pkg'), 'sha256 -r format');

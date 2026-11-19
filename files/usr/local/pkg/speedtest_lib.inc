@@ -646,11 +646,11 @@ const SPEEDTEST_PKG_NAME = 'pfSense-pkg-speedtest';
 
 /* Release versions are plain x.y.z; anything else never reaches a URL or shell. */
 function speedtest_valid_version(string $v): bool {
-	return (bool)preg_match('/^[0-9]{1,6}\.[0-9]{1,6}\.[0-9]{1,6}$/', $v);
+	return (bool)preg_match('/^[0-9]{1,6}\.[0-9]{1,6}\.[0-9]{1,6}\z/', $v);
 }
 
 function speedtest_valid_sha256(string $s): bool {
-	return (bool)preg_match('/^[0-9a-f]{64}$/', $s);
+	return (bool)preg_match('/^[0-9a-f]{64}\z/', $s);
 }
 
 /*
