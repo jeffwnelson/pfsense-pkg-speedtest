@@ -81,7 +81,8 @@ assert_true(has('text-danger', $h), 'error badge');
 assert_true(has('title="interface has no address &lt;x&gt;"', $h), 'error title text escaped');
 
 $h = speedtest_render_rows($gws, [], null, ['METRONET_GW'], false, false, 'wk');
-assert_true(!has('MetroNet', $h) && has('Quantum', $h), 'hidden gateway omitted');
+assert_true(!has('METRONET_GW', $h) && has('QUANTUM_GW', $h), 'hidden gateway omitted');
+assert_true(has('<td title="Quantum">', $h), 'description shown as tooltip');
 
 $h = speedtest_render_rows($gws, ['QUANTUM_GW' => $pass], null, [], true, true, 'wk');
 assert_true(!has('4.3 ms', $h) && !has('never', $h) && !has(date('Y-m-d H:i', strtotime('2026-10-23T10:05:00-05:00')), $h), 'both hidden: no ping/last run text');
@@ -101,7 +102,10 @@ assert_eq(2, substr_count($h, 'disabled="disabled"'), 'all run buttons disabled 
 
 $evil = ['X_GW' => ['descr' => '<b>bold</b>', 'ifname' => 'a', 'friendly' => 'a', 'address' => '1.1.1.1']];
 $h = speedtest_render_rows($evil, [], null, [], false, false, 'wk');
-assert_true(!has('<b>', $h) && has('&lt;b&gt;bold', $h), 'descr escaped');
+assert_true(!has('<b>', $h) && has('title="&lt;b&gt;bold&lt;/b&gt;"', $h), 'descr escaped in tooltip');
+assert_true(has('X_GW</td>', $h), 'internal name shown');
+$h = speedtest_render_rows(['Y_GW' => ['descr' => '', 'ifname' => 'a', 'friendly' => 'a', 'address' => '1.1.1.1']], [], null, [], false, false, 'k');
+assert_true(has('<td>Y_GW</td>', $h), 'no description: name shown, no tooltip');
 
 $h = speedtest_render_rows([], [], null, [], false, false, 'wk');
 assert_true(has('No gateways', $h), 'empty message');

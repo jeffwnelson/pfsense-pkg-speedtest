@@ -576,8 +576,11 @@ function speedtest_render_rows(array $gateways, array $results, ?array $running,
 		$gwh = speedtest_h($name);
 
 		$out .= '<tr class="speedtest-row" data-gw="' . $gwh . '">';
-		$out .= '<td>' . ($rec !== null ? '<i class="fa-solid fa-chevron-right speedtest-toggle" role="button"></i> ' : '')
-			. speedtest_h($gw['descr'] ?? $name) . '</td>';
+		/* Show the gateway's internal name; its description is the tooltip. */
+		$descr = trim((string)($gw['descr'] ?? ''));
+		$out .= '<td' . ($descr !== '' ? ' title="' . speedtest_h($descr) . '"' : '') . '>'
+			. ($rec !== null ? '<i class="fa-solid fa-chevron-right speedtest-toggle" role="button"></i> ' : '')
+			. $gwh . '</td>';
 		if ($rec === null) {
 			$out .= '<td></td><td></td>';
 		} else {
