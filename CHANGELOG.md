@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+
+## [v0.3.2](https://github.com/jeffwnelson/pfsense-pkg-speedtest/compare/7ae2e2172f0441a5651f580de9ae00a778a54a9c..v0.3.2) - 2026-11-19
+#### Continuous Integration
+- drop commit authors from changelog and release notes (#6) - ([7ae2e21](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/7ae2e2172f0441a5651f580de9ae00a778a54a9c))
+
+- - -
+
 ## [v0.3.1](https://github.com/jeffwnelson/pfsense-pkg-speedtest/compare/2cda8734e18e1e59bcda99233368b347d5f9f9ff..v0.3.1) - 2026-11-19
 #### Bug Fixes
 - (**updates**) lay out the Updates tab like other pfSense settings pages (#5) - ([2cda873](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/2cda8734e18e1e59bcda99233368b347d5f9f9ff)) - Jeff Nelson
