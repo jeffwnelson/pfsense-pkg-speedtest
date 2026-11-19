@@ -11,26 +11,26 @@ All notable changes to this project will be documented in this file. See [conven
 
 ## [v0.3.1](https://github.com/jeffwnelson/pfsense-pkg-speedtest/compare/2cda8734e18e1e59bcda99233368b347d5f9f9ff..v0.3.1) - 2026-11-19
 #### Bug Fixes
-- (**updates**) lay out the Updates tab like other pfSense settings pages (#5) - ([2cda873](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/2cda8734e18e1e59bcda99233368b347d5f9f9ff)) - Jeff Nelson
+- (**updates**) lay out the Updates tab like other pfSense settings pages (#5) - ([2cda873](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/2cda8734e18e1e59bcda99233368b347d5f9f9ff))
 
 - - -
 
 ## [v0.3.0](https://github.com/jeffwnelson/pfsense-pkg-speedtest/compare/10b21531b690ec08594fd1b875c75a4a3ab1e7c0..v0.3.0) - 2026-11-19
 #### Features
-- (**updates**) self-update from GitHub releases (#4) - ([10b2153](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/10b21531b690ec08594fd1b875c75a4a3ab1e7c0)) - Jeff Nelson
+- (**updates**) self-update from GitHub releases (#4) - ([10b2153](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/10b21531b690ec08594fd1b875c75a4a3ab1e7c0))
 
 - - -
 
 ## [v0.2.3](https://github.com/jeffwnelson/pfsense-pkg-speedtest/compare/8f570f0e049d50f95d9e57e80c2f0b0b013309cc..v0.2.3) - 2026-11-19
 #### Documentation
-- remove docs directory and release notes from README (#3) - ([8f570f0](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/8f570f0e049d50f95d9e57e80c2f0b0b013309cc)) - Jeff Nelson
+- remove docs directory and release notes from README (#3) - ([8f570f0](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/8f570f0e049d50f95d9e57e80c2f0b0b013309cc))
 
 - - -
 
 ## [v0.2.2](https://github.com/jeffwnelson/pfsense-pkg-speedtest/compare/9e10c02e319b433de8cb663d6290a6e49919ef1e..v0.2.2) - 2026-11-18
 #### Continuous Integration
-- release every push to main with cocogitto version bumps and notes (#2) - ([f519f9f](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/f519f9fac51be960b8590fe8a24947a6c82548a9)) - Jeff Nelson
-- pin and update actions, scope permissions, add Dependabot and SECURITY.md (#1) - ([9e10c02](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/9e10c02e319b433de8cb663d6290a6e49919ef1e)) - Jeff Nelson
+- release every push to main with cocogitto version bumps and notes (#2) - ([f519f9f](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/f519f9fac51be960b8590fe8a24947a6c82548a9))
+- pin and update actions, scope permissions, add Dependabot and SECURITY.md (#1) - ([9e10c02](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/9e10c02e319b433de8cb663d6290a6e49919ef1e))
 
 - - -
 
