@@ -18,7 +18,8 @@ function glue_fixture(string $root, string $run_dir, string $bin): void {
 		'libexec' => __DIR__ . '/../files/usr/local/libexec/speedtest',
 	];
 	$GLOBALS['stub_config'] = ['installedpackages' => [
-		'speedtest' => ['config' => [['enable' => 'on', 'retention' => '']]],
+		/* Update check off so cron tests see only scheduled runs; update_glue.test.php covers it. */
+		'speedtest' => ['config' => [['enable' => 'on', 'retention' => '', 'no_update_check' => 'on']]],
 		'speedtestgateways' => ['config' => [
 			['gateway' => 'METRO_GW', 'advertised_down' => '2000', 'advertised_up' => '', 'threshold_pct' => '', 'server_id' => '1234'],
 			['gateway' => 'QUANTUM_GW', 'advertised_down' => '1000', 'advertised_up' => '1000', 'threshold_pct' => '90', 'server_id' => ''],

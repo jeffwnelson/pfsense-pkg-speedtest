@@ -7,14 +7,16 @@
 # (pkg-script(5) ENVIRONMENT; libpkg/scripts.c pkg_script_run()). Current pkg
 # runs only the old pre-deinstall during an upgrade, but older or other code
 # paths may run post-deinstall too, so it must never delete the Ookla binary
-# or stored results while PKG_UPGRADE is set.
+# or stored results while PKG_UPGRADE is set. The self-updater (update.sh)
+# holds /var/run/speedtest/update.lock for the whole pkg add, including
+# forced reinstalls and rollbacks that may not set PKG_UPGRADE.
 case "${2}" in
 DEINSTALL)
 	/usr/local/bin/php -f /etc/rc.packages pfSense-pkg-speedtest DEINSTALL
 	;;
 POST-DEINSTALL)
 	/usr/local/bin/php -f /etc/rc.packages pfSense-pkg-speedtest POST-DEINSTALL
-	if [ -n "${PKG_UPGRADE:-}" ]; then
+	if [ -n "${PKG_UPGRADE:-}" ] || [ -d /var/run/speedtest/update.lock ]; then
 		exit 0
 	fi
 	rm -f /usr/local/libexec/speedtest/ookla-speedtest

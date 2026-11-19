@@ -35,6 +35,15 @@ sbox
 [ -e "$tmp/libexec/ookla-speedtest" ] || fail "upgrade removed the Ookla binary"
 [ -d "$tmp/db" ] || fail "upgrade wiped the data dir"
 
+# The self-updater's forced reinstall/rollback may not set PKG_UPGRADE; its lock must protect data too.
+sbox
+mkdir -p "$tmp/run/update.lock"
+(unset PKG_UPGRADE; sh "$tmp/sbox.sh") || fail "self-update run failed"
+[ -e "$tmp/libexec/ookla-speedtest" ] || fail "self-update removed the Ookla binary"
+[ -d "$tmp/db" ] || fail "self-update wiped the data dir"
+[ -d "$tmp/run/update.lock" ] || fail "self-update removed the runtime dir"
+rm -rf "$tmp/run/update.lock"
+
 sbox
 (unset PKG_UPGRADE; sh "$tmp/sbox.sh") || fail "deinstall run failed"
 [ ! -e "$tmp/libexec/ookla-speedtest" ] || fail "deinstall kept the Ookla binary"

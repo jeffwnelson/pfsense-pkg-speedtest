@@ -639,3 +639,149 @@ function speedtest_render_rows(array $gateways, array $results, ?array $running,
 	}
 	return $out;
 }
+
+/* ---- Package self-update (pure helpers) ---- */
+
+const SPEEDTEST_PKG_NAME = 'pfSense-pkg-speedtest';
+
+/* Release versions are plain x.y.z; anything else never reaches a URL or shell. */
+function speedtest_valid_version(string $v): bool {
+	return (bool)preg_match('/^[0-9]{1,6}\.[0-9]{1,6}\.[0-9]{1,6}$/', $v);
+}
+
+function speedtest_valid_sha256(string $s): bool {
+	return (bool)preg_match('/^[0-9a-f]{64}$/', $s);
+}
+
+/*
+ * Parse the GitHub "list releases" JSON for $repo into installable releases,
+ * newest version first: [['version','tag','published','notes','pkg_url',
+ * 'pkg_sha256' => ?string,'sha_url' => ?string]]. Drafts, prereleases, tags
+ * that are not vX.Y.Z and releases without the package asset are skipped.
+ * Asset URLs must be this repo's release downloads.
+ */
+function speedtest_parse_releases(string $json, string $repo): array {
+	$list = json_decode($json, true);
+	if (!is_array($list)) {
+		return [];
+	}
+	$prefix = "https://github.com/$repo/releases/download/";
+	$out = [];
+	foreach ($list as $r) {
+		if (!is_array($r) || !empty($r['draft']) || !empty($r['prerelease'])) {
+			continue;
+		}
+		$tag = (string)($r['tag_name'] ?? '');
+		$ver = substr($tag, 1);
+		if ($tag === '' || $tag[0] !== 'v' || !speedtest_valid_version($ver) || isset($out[$ver])) {
+			continue;
+		}
+		$pkg = SPEEDTEST_PKG_NAME . "-$ver.pkg";
+		$pkg_url = null;
+		$pkg_sha = null;
+		$sha_url = null;
+		foreach ((array)($r['assets'] ?? []) as $a) {
+			if (!is_array($a)) {
+				continue;
+			}
+			$name = (string)($a['name'] ?? '');
+			$url = (string)($a['browser_download_url'] ?? '');
+			if ($url !== $prefix . "$tag/$name") {
+				continue;
+			}
+			if ($name === $pkg) {
+				$pkg_url = $url;
+				$digest = (string)($a['digest'] ?? '');
+				if (strncmp($digest, 'sha256:', 7) === 0 && speedtest_valid_sha256(substr($digest, 7))) {
+					$pkg_sha = substr($digest, 7);
+				}
+			} elseif ($name === "$pkg.sha256") {
+				$sha_url = $url;
+			}
+		}
+		if ($pkg_url === null) {
+			continue;
+		}
+		$out[$ver] = [
+			'version' => $ver,
+			'tag' => $tag,
+			'published' => (string)($r['published_at'] ?? ''),
+			'notes' => (string)($r['body'] ?? ''),
+			'pkg_url' => $pkg_url,
+			'pkg_sha256' => $pkg_sha,
+			'sha_url' => $sha_url,
+		];
+	}
+	uksort($out, function ($a, $b) { return version_compare($b, $a); });
+	return array_values($out);
+}
+
+/* The newest release strictly newer than $installed, or null. */
+function speedtest_update_available(string $installed, array $releases): ?array {
+	foreach ($releases as $r) {
+		if (version_compare($r['version'], $installed, '>')) {
+			return $r;
+		}
+		break;
+	}
+	return null;
+}
+
+function speedtest_find_release(array $releases, string $version): ?array {
+	foreach ($releases as $r) {
+		if ($r['version'] === $version) {
+			return $r;
+		}
+	}
+	return null;
+}
+
+/* Hash from a `sha256 -r` / sha256sum line naming $filename; null if absent or malformed. */
+function speedtest_parse_sha256_file(string $text, string $filename): ?string {
+	foreach (preg_split('/\r?\n/', $text) as $line) {
+		if (preg_match('/^([0-9a-fA-F]{64})\s+\*?(\S+)$/', trim($line), $m) && basename($m[2]) === $filename) {
+			return strtolower($m[1]);
+		}
+	}
+	return null;
+}
+
+/*
+ * Render cocogitto release notes (a small Markdown subset: "#### heading",
+ * "- item", **bold**, `code`, [text](https://...)) to escaped HTML. Only
+ * https links are kept; everything else is text.
+ */
+function speedtest_render_notes(string $md): string {
+	$inline = function (string $s): string {
+		$s = htmlspecialchars($s, ENT_QUOTES);
+		$s = preg_replace('/\[([^\]]*)\]\((https:\/\/[^\s)"]+)\)/', '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>', $s);
+		$s = preg_replace('/\*\*(.+?)\*\*/', '<strong>$1</strong>', $s);
+		return preg_replace('/`([^`]+)`/', '<code>$1</code>', $s);
+	};
+	$html = '';
+	$in_list = false;
+	foreach (preg_split('/\r?\n/', $md) as $line) {
+		$line = rtrim($line);
+		if (preg_match('/^\s*[-*] (.*)$/', $line, $m)) {
+			if (!$in_list) {
+				$html .= '<ul>';
+				$in_list = true;
+			}
+			$html .= '<li>' . $inline($m[1]) . '</li>';
+			continue;
+		}
+		if ($in_list) {
+			$html .= '</ul>';
+			$in_list = false;
+		}
+		if ($line === '') {
+			continue;
+		}
+		if (preg_match('/^#{1,6} (.*)$/', $line, $m)) {
+			$html .= '<p><strong>' . $inline($m[1]) . '</strong></p>';
+		} else {
+			$html .= '<p>' . $inline($line) . '</p>';
+		}
+	}
+	return $html . ($in_list ? '</ul>' : '');
+}

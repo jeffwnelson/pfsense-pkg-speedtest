@@ -64,7 +64,7 @@ function speedtest_row_interval($v): int {
 /*
  * ['rows' => [gw => ['advertised_down'=>?int,'advertised_up'=>?int,
  * 'threshold_pct'=>int,'server_id'=>?int,'interval'=>int]], 'retention' => int,
- * 'ookla_version' => ?string, 'enabled' => bool].
+ * 'ookla_version' => ?string, 'enabled' => bool, 'update_check' => bool].
  */
 function speedtest_settings(): array {
 	if (isset($GLOBALS['speedtest_test_settings'])) {
@@ -94,6 +94,8 @@ function speedtest_settings(): array {
 		'ookla_version' => $ver === '' ? null : $ver,
 		/* Enable defaults to on: until the General tab is first saved there is no config entry. */
 		'enabled' => $general === [] || ($general['enable'] ?? '') === 'on',
+		/* Opt-out checkbox, so installs that never saved the General tab still check. */
+		'update_check' => ($general['no_update_check'] ?? '') !== 'on',
 	];
 }
 
@@ -385,6 +387,14 @@ function speedtest_validate_gateway_row(array $post, &$input_errors, $id = null)
 }
 
 const SPEEDTEST_SCHEDULED_SCRIPT = '/usr/local/libexec/speedtest/scheduled.php';
+/* Daily check for a newer package release (posts a pfSense notice; never installs). */
+const SPEEDTEST_UPDATE_CHECK_CMD = '/usr/local/bin/pfsense-speedtest check --cron';
+const SPEEDTEST_UPDATE_CHECK_SPEC = ['minute' => '41', 'hour' => '4'];
+
+/* True for cron items this package owns. */
+function speedtest_is_own_cron(string $cmd): bool {
+	return strpos($cmd, SPEEDTEST_SCHEDULED_SCRIPT) !== false || $cmd === SPEEDTEST_UPDATE_CHECK_CMD;
+}
 
 /*
  * Make cron/item match the settings. install_cron_job() matches by substring
@@ -400,7 +410,7 @@ function speedtest_apply_cron(array $desired, string $desc): void {
 	$seen = [];
 	foreach ($before as $item) {
 		$cmd = (string)($item['command'] ?? '');
-		if (strpos($cmd, SPEEDTEST_SCHEDULED_SCRIPT) === false) {
+		if (!speedtest_is_own_cron($cmd)) {
 			$after[] = $item;
 		} elseif (isset($desired[$cmd]) && !isset($seen[$cmd])) {
 			$seen[$cmd] = true;
@@ -427,10 +437,13 @@ function speedtest_cron_item(string $cmd, array $spec): array {
 function speedtest_reconcile_cron(): void {
 	$settings = speedtest_settings();
 	$desired = ($settings['enabled'] ?? true) ? speedtest_desired_cron_jobs($settings['rows']) : [];
+	if ($settings['update_check'] ?? true) {
+		$desired[SPEEDTEST_UPDATE_CHECK_CMD] = SPEEDTEST_UPDATE_CHECK_SPEC;
+	}
 	speedtest_apply_cron($desired, 'speedtest: cron reconcile');
 }
 
-/* Deinstall: drop every scheduled.php cron item. */
+/* Deinstall: drop every cron item this package owns. */
 function speedtest_remove_all_cron_jobs(): void {
 	speedtest_apply_cron([], 'speedtest: cron removed');
 }

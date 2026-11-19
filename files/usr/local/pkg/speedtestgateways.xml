@@ -19,6 +19,10 @@
 			<url>/pkg.php?xml=speedtestgateways.xml</url>
 			<active/>
 		</tab>
+		<tab>
+			<text>Updates</text>
+			<url>/speedtest_updates.php</url>
+		</tab>
 	</tabs>
 	<adddeleteeditpagefields>
 		<columnitem>

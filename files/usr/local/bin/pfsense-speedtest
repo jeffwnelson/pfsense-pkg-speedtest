@@ -1,0 +1,11 @@
+#!/usr/local/bin/php -f
+<?php
+/*
+ * Copyright 2026 Jeff Nelson
+ * Licensed under the Apache License, Version 2.0.
+ *
+ * pfsense-speedtest: package version, update check and self-update.
+ * Usage: pfsense-speedtest version | check [--cron] | list | update [version]
+ */
+require_once getenv('SPEEDTEST_UPDATE_INC') ?: '/usr/local/pkg/speedtest_update.inc';
+exit(speedtest_cli_main($argv));
