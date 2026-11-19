@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [v0.4.0](https://github.com/jeffwnelson/pfsense-pkg-speedtest/compare/b988407868fc88873675db43197be628e7aeb728..v0.4.0) - 2026-11-19
+#### Features
+- (**widget**) show gateway internal names, with the description as a tooltip (#9) - ([b988407](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/b988407868fc88873675db43197be628e7aeb728))
+
+- - -
+
+
 ## [v0.3.4](https://github.com/jeffwnelson/pfsense-pkg-speedtest/compare/b3aa6acc4b58989b7c489aa26b207728fb83a654..v0.3.4) - 2026-11-19
 #### Documentation
 - rewrite README for users and contributors (#8) - ([b3aa6ac](https://github.com/jeffwnelson/pfsense-pkg-speedtest/commit/b3aa6acc4b58989b7c489aa26b207728fb83a654))
